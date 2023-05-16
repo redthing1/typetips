@@ -15,3 +15,4 @@ typetips-test-*
 *.obj
 *.lst
 *.a
+mixins.txt

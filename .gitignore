@@ -1,0 +1,17 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/typetips
+typetips.so
+typetips.dylib
+typetips.dll
+typetips.a
+typetips.lib
+typetips-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst
+*.a

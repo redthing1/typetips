@@ -1,5 +1,6 @@
 module typetips;
 
 public {
-    import typetips.optional;
+    import typetips.optional_ext;
+    import typetips.sumtype_ext;
 }

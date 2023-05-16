@@ -20,13 +20,6 @@ import typetips.optional_ext;
 
     auto f1 = Apple("Granny Smith");
     auto f2 = Pear(3);
-
-    bool get_is_yummy(Fruit fruit) {
-        return fruit.match_sumtype!(
-            (Apple a) => a.yummy,
-            (Pear p) => p.was_picked_yesterday
-        );
-    }
 }
 
 template SumTypeExt(TSumType) {
@@ -43,6 +36,18 @@ template SumTypeExt(TSumType) {
             (TOneType t) => true,
             _ => false
         );
+    }
+
+    Sum wrap(TOneType)(TOneType opt) {
+        return cast(TSumType) opt;
+    }
+
+    Optional!Sum maybe_wrap(TOneType)(Optional!TOneType opt) {
+        if (opt.any) {
+            return some(wrap(opt.get));
+        } else {
+            return no!Sum;
+        }
     }
 }
 
@@ -75,4 +80,42 @@ template SumTypeExt(TSumType) {
 
     auto s2_doesnt_hold_milk = StoreThing.holds!SoyMilk(s2);
     assert(!s2_doesnt_hold_milk, "s2 shouldn't hold milk");
+
+    StoreThing.Sum get_todays_item(int day) {
+        if (day % 2 == 0) {
+            return StoreThing.wrap(SoyMilk(1.5));
+        } else {
+            return StoreThing.wrap(Bread(2));
+        }
+    }
+
+    Optional!(StoreThing.Sum) get_cheap_milk(int day) {
+        Optional!SoyMilk maybe_milk;
+        if (day == 0 || day == 1) {
+            maybe_milk = some(SoyMilk(1.5));
+        } else {
+            maybe_milk = no!SoyMilk;
+        }
+        return StoreThing.maybe_wrap(maybe_milk);
+    }
+
+    int guess_price(StoreThing.Sum item) {
+        return item.match_sumtype!(
+            (SoyMilk milk) => cast(int)(milk.gallons * 2),
+            (Bread bread) => bread.slices / 8,
+        );
+    }
+
+    auto soymilk_2gal = SoyMilk(2);
+    assert(guess_price(StoreThing.wrap(soymilk_2gal)) == 4, "soymilk_2gal should be $4");
+
+    auto todays_item_day0 = get_todays_item(0);
+    auto todays_item_day1 = get_todays_item(1);
+    assert(StoreThing.holds!SoyMilk(todays_item_day0), "todays_item_day0 should hold milk");
+
+    auto maybe_cheap_milk_day1 = get_cheap_milk(1);
+    assert(maybe_cheap_milk_day1.any, "cheap_milk_day1 should be some");
+
+    auto maybe_cheap_milk_day2 = get_cheap_milk(2);
+    assert(!maybe_cheap_milk_day2.any, "cheap_milk_day2 should be no");
 }

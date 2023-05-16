@@ -1,5 +1,6 @@
 module typetips.sumtype_ext;
 
+import std.exception : enforce, assertThrown;
 public import std.sumtype : SumType;
 public import std.sumtype : match_sumtype = match;
 
@@ -38,6 +39,14 @@ template SumTypeExt(TSumType) {
         );
     }
 
+    TOneType unwrap(TOneType)(TSumType thing) {
+        enforce(holds!TOneType(thing), "unwrap should only be called on a SumType that holds the type");
+        return thing.match_sumtype!(
+            (TOneType t) => t,
+            _ => assert(0),
+        );
+    }
+
     Sum wrap(TOneType)(TOneType opt) {
         return cast(TSumType) opt;
     }
@@ -71,6 +80,9 @@ template SumTypeExt(TSumType) {
     assert(maybe_bread2_back.any, "maybe_bread2_back should be some");
     auto bread2_back = maybe_bread2_back.get;
     assert(bread2 == bread2_back, "bread2 should equal bread2_back");
+
+    auto bread2_taken = StoreThing.unwrap!Bread(s2);
+    assert(bread2 == bread2_taken, "bread2 should equal bread2_taken");
 
     auto probably_not_milk = StoreThing.as!SoyMilk(s2);
     assert(!probably_not_milk.any, "probably_not_milk should be no");

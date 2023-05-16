@@ -72,4 +72,7 @@ template SumTypeExt(TSumType) {
 
     auto s1_holds_milk = StoreThing.holds!SoyMilk(s1);
     assert(s1_holds_milk, "s1 should hold milk");
+
+    auto s2_doesnt_hold_milk = StoreThing.holds!SoyMilk(s2);
+    assert(!s2_doesnt_hold_milk, "s2 shouldn't hold milk");
 }

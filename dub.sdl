@@ -3,7 +3,7 @@ description "utils for types/sumtypes/optional in D"
 authors "redthing1"
 copyright "Copyright © 2023, redthing1"
 license "proprietary"
-dependency "bolts" version="~>1.8.1"
+dependency "optional" version="~>1.3.0"
 configuration "default" {
 	targetType "library"
 }

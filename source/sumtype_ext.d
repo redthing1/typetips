@@ -2,8 +2,6 @@ module typetips.sumtype_ext;
 
 public import std.sumtype;
 
-import typetips.optional_ext;
-
 @("sumtype-basic") unittest {
     struct Apple {
         string variety;
@@ -45,5 +43,7 @@ T1 as(T2, T1)(T2 t2) {
     auto s1 = SoyMilk(1.5);
     auto s2 = Bread(2);
 
-    auto bread2 = s2.as!(Bread);
+    // get a bread from a store thing
+    // auto bread2 = s2.as!(StoreThing, Bread);
+    auto bread2 = cast(Bread) s2;
 }

@@ -29,14 +29,23 @@ import typetips.optional_ext;
     }
 }
 
-Optional!TOneType as(TSumType, TOneType)(TSumType thing) {
-    return thing.match_sumtype!(
-        (TOneType t) => some(t),
-        _ => no!TOneType
-    );
+template SumTypeExt(TSumType) {
+    Optional!TOneType as(TOneType)(TSumType thing) {
+        return thing.match_sumtype!(
+            (TOneType t) => some(t),
+            _ => no!TOneType
+        );
+    }
+
+    bool holds(TOneType)(TSumType thing) {
+        return thing.match_sumtype!(
+            (TOneType t) => true,
+            _ => false
+        );
+    }
 }
 
-@("sumtype-as") unittest {
+@("sumtype-ext") unittest {
     struct SoyMilk {
         float gallons;
     }
@@ -46,14 +55,18 @@ Optional!TOneType as(TSumType, TOneType)(TSumType thing) {
     }
 
     alias StoreThing = SumType!(SoyMilk, Bread);
+    alias StoreThingExt = SumTypeExt!StoreThing;
 
     auto bread2 = Bread(2);
 
     StoreThing s1 = SoyMilk(1.5);
     StoreThing s2 = bread2;
-    
-    auto maybe_bread2_back = as!(StoreThing, Bread)(s2);
+
+    auto maybe_bread2_back = StoreThingExt.as!Bread(s2);
     assert(maybe_bread2_back.any, "maybe_bread2_back should be some");
     auto bread2_back = maybe_bread2_back.get;
     assert(bread2 == bread2_back, "bread2 should equal bread2_back");
+
+    auto s1_holds_milk = StoreThingExt.holds!SoyMilk(s1);
+    assert(s1_holds_milk, "s1 should hold milk");
 }

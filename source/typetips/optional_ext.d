@@ -7,6 +7,8 @@ bool any(T)(Optional!T thing) {
     return !thing.empty;
 }
 
+alias has = any;
+
 @("optional-any")
 unittest {
     auto b1 = some(true);
@@ -14,6 +16,9 @@ unittest {
 
     assert(b1.any);
     assert(!b2.any);
+
+    assert(b1.has);
+    assert(!b2.has);
 }
 
 T get(T)(Optional!T thing) {
